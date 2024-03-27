@@ -1,0 +1,11 @@
+C:\Users\Alexandra\source\SGBD\Dedeman\Dedeman\bin\Debug\Dedeman.exe.config
+C:\Users\Alexandra\source\SGBD\Dedeman\Dedeman\bin\Debug\Dedeman.exe
+C:\Users\Alexandra\source\SGBD\Dedeman\Dedeman\bin\Debug\Dedeman.pdb
+C:\Users\Alexandra\source\SGBD\Dedeman\Dedeman\obj\Debug\Dedeman.csproj.AssemblyReference.cache
+C:\Users\Alexandra\source\SGBD\Dedeman\Dedeman\obj\Debug\Dedeman.csproj.SuggestedBindingRedirects.cache
+C:\Users\Alexandra\source\SGBD\Dedeman\Dedeman\obj\Debug\Dedeman.Form1.resources
+C:\Users\Alexandra\source\SGBD\Dedeman\Dedeman\obj\Debug\Dedeman.Properties.Resources.resources
+C:\Users\Alexandra\source\SGBD\Dedeman\Dedeman\obj\Debug\Dedeman.csproj.GenerateResource.cache
+C:\Users\Alexandra\source\SGBD\Dedeman\Dedeman\obj\Debug\Dedeman.csproj.CoreCompileInputs.cache
+C:\Users\Alexandra\source\SGBD\Dedeman\Dedeman\obj\Debug\Dedeman.exe
+C:\Users\Alexandra\source\SGBD\Dedeman\Dedeman\obj\Debug\Dedeman.pdb
