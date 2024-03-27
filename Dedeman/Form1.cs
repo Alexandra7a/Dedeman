@@ -180,25 +180,25 @@ namespace Dedeman
             {
 
                 if (!string.IsNullOrEmpty(nume.Text) && !string.IsNullOrEmpty(cantitate.Text) &&
-            !string.IsNullOrEmpty(pret.Text) && !string.IsNullOrEmpty(magazin.Text) && !string.IsNullOrEmpty(descriere.Text))
+            !string.IsNullOrEmpty(pret.Text) && !string.IsNullOrEmpty(magazin.Text))
                 {
                     da.UpdateCommand = new SqlCommand("Update Produse set " +
                         "nume=@nume, " +
                         "categorie=@categorie," +
                         " pret=@pret, " +
                         "cantitate=@cantitate" +
-                        ",descriere=@descriere,cod_magazin=@cod_magazin" +
-                        "where cod_prod=@cod_prod", cs);
+                        ",descriere=@descriere," +
+                        "cod_magazin=@cod_magazin where cod_prod=@cod_prod", cs);
 
-                    da.InsertCommand.Parameters.Add("@nume", SqlDbType.NVarChar).Value = nume.Text;
-                    da.InsertCommand.Parameters.Add("@categorie", SqlDbType.VarChar).Value = cat;
-                    da.InsertCommand.Parameters.Add("@pret", SqlDbType.Float).Value = pret.Text;
+                    da.UpdateCommand.Parameters.Add("@nume", SqlDbType.NVarChar).Value = nume.Text;
+                    da.UpdateCommand.Parameters.Add("@categorie", SqlDbType.VarChar).Value = cat;
+                    da.UpdateCommand.Parameters.Add("@pret", SqlDbType.Float).Value = float.Parse(pret.Text);
 
-                    da.InsertCommand.Parameters.Add("@cantitate", SqlDbType.Int).Value = int.Parse(cantitate.Text);
-                    da.InsertCommand.Parameters.Add("@descriere", SqlDbType.VarChar).Value = descriere.Text;
-                    da.InsertCommand.Parameters.Add("@cod_magazin", SqlDbType.Int).Value = int.Parse(magazin.Text);
+                    da.UpdateCommand.Parameters.Add("@cantitate", SqlDbType.Int).Value = int.Parse(cantitate.Text);
+                    da.UpdateCommand.Parameters.Add("@descriere", SqlDbType.VarChar).Value = descriere.Text;
+                    da.UpdateCommand.Parameters.Add("@cod_magazin", SqlDbType.Int).Value = int.Parse(magazin.Text);
 
-                    da.InsertCommand.Parameters.Add("@cod_prod", SqlDbType.Int).Value = int.Parse(dataGridView2.SelectedRows[0].Cells[0].Value.ToString());
+                    da.UpdateCommand.Parameters.Add("@cod_prod", SqlDbType.Int).Value = int.Parse(dataGridView2.SelectedRows[0].Cells[0].Value.ToString());
 
 
                     cs.Open();
@@ -221,24 +221,21 @@ namespace Dedeman
             try
             {
 
-                if (!string.IsNullOrEmpty(nume.Text) && !string.IsNullOrEmpty(cantitate.Text) &&
-            !string.IsNullOrEmpty(pret.Text) && !string.IsNullOrEmpty(magazin.Text) && !string.IsNullOrEmpty(descriere.Text))
-                {
-                    da.DeleteCommand = new SqlCommand("Delete from Produse" +
-                        "where cod_prod=@cod_prod", cs);
+               
+                    da.DeleteCommand = new SqlCommand("Delete from Produse where cod_prod=@cod_prod", cs);
 
                     da.DeleteCommand.Parameters.Add("@cod_prod", SqlDbType.Int).Value = int.Parse(dataGridView2.SelectedRows[0].Cells[0].Value.ToString());
 
                     cs.Open();
                     da.DeleteCommand.ExecuteNonQuery();
-                    MessageBox.Show("Update succesful");
-                }
+                    MessageBox.Show("Delete succesful");
+             
                 cs.Close();
             }
             catch (Exception ex)
             {
                 cs.Close();
-                MessageBox.Show("no update");
+                MessageBox.Show("no delete");
                 Console.WriteLine(ex.Message);
 
             }

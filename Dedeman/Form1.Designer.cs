@@ -52,7 +52,7 @@
             // connect
             // 
             this.connect.BackColor = System.Drawing.SystemColors.Info;
-            this.connect.Location = new System.Drawing.Point(15, 8);
+            this.connect.Location = new System.Drawing.Point(15, 295);
             this.connect.Name = "connect";
             this.connect.Size = new System.Drawing.Size(104, 37);
             this.connect.TabIndex = 0;
