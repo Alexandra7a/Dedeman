@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 using System.Drawing;
@@ -13,16 +14,13 @@ using System.Windows.Forms;
 namespace Dedeman
 {
     public partial class Form1 : Form
-
     {
-        private SqlConnection cs = new SqlConnection("Data Source=DESKTOP-E7Q8EGR\\SQLEXPRESS;" +
-"initial Catalog=Dedeman;Integrated Security=True");
+        private SqlConnection cs = new SqlConnection(ConfigurationManager.ConnectionStrings["cn"].ConnectionString);
         private SqlDataAdapter da = new SqlDataAdapter();
         DataSet ds = new DataSet();
         DataSet ds1 = new DataSet();
 
-
-
+        private int id;
         public Form1()
         {
             InitializeComponent();
@@ -42,16 +40,39 @@ namespace Dedeman
         {
 
         }
+        private bool generatedBoxes=false;
+        private void geneerateTextBoxes_Clicked(object sender, EventArgs e)
+        {
+            List<string> list = new List<string>(ConfigurationManager.AppSettings["ChildColumnName"].Split(','));
+            int pointX=10,pointY=10;
+            int i = 0;
+            foreach(var l in list)
+            {
+                TextBox aTextBox=new TextBox();
+                aTextBox.Width=300;
+                aTextBox.Text=l;
+                aTextBox.Name=l;
+                aTextBox.Location = new Point(pointX, pointY);
+                if(i==0)
+                    aTextBox.Enabled=false;
+                else
+                    aTextBox.Visible = true;
+                aTextBox.Parent = box_panel;
+                pointY += 30;
+                generatedBoxes = true;
+                i++;
+            }
+
+        }
 
         private void connect_Click(object sender, EventArgs e)
         {
             try
             {
-                da.SelectCommand = new SqlCommand("SELECT * FROM Categorii", cs);
+                da.SelectCommand = new SqlCommand(ConfigurationManager.AppSettings["selectParent"], cs);
                 ds.Clear();
                 da.Fill(ds);
                 dataGridView1.DataSource = ds.Tables[0];
-       
             }
             catch (Exception ex)
             {
@@ -59,25 +80,23 @@ namespace Dedeman
  
             }
         }
-        private string cat;
+        private string pFkid;
 
         private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
         {
             Console.WriteLine("s-a apasat", e.RowIndex);
             try
             {
-                dataGridView1.BackgroundColor = SystemColors.ControlDark;
                 Console.WriteLine("s-a apasat", e.RowIndex);
 
-                Console.WriteLine("s-a apasat", e.RowIndex);
-                da.SelectCommand = new SqlCommand(" select cod_prod, nume, pret, cantitate,descriere,cod_magazin from Produse where categorie=@categorie", cs);
-                cat = dataGridView1.SelectedRows[0].Cells[0].Value.ToString();
-                da.SelectCommand.Parameters.Add("@categorie", SqlDbType.VarChar).Value = cat;
+                da.SelectCommand = new SqlCommand(ConfigurationManager.AppSettings["selectChild"], cs);
+                pFkid = dataGridView1.SelectedRows[0].Cells[0].Value.ToString();
+                Console.WriteLine(pFkid);
+                da.SelectCommand.Parameters.Add("@pFkid", SqlDbType.VarChar).Value = pFkid;
                 ds1.Clear();
                 da.Fill(ds1);
-
                 dataGridView2.DataSource = ds1.Tables[0];
-                dataGridView2.Columns["cod_prod"].Visible = false;
+                //dataGridView2.Columns["cod_prod"].Visible = false;
             }
             catch (Exception ex)
             {
@@ -93,12 +112,24 @@ namespace Dedeman
 
         private void DataGrid2_CellClick(object sender, DataGridViewCellEventArgs e)
         {
-            nume.Text = dataGridView2.SelectedRows[0].Cells["nume"].Value.ToString();
-            pret.Text = dataGridView2.SelectedRows[0].Cells["pret"].Value.ToString();
-            cantitate.Text = dataGridView2.SelectedRows[0].Cells["cantitate"].Value.ToString();
-            magazin.Text = dataGridView2.SelectedRows[0].Cells["cod_magazin"].Value.ToString();
-            descriere.Text = dataGridView2.SelectedRows[0].Cells["descriere"].Value.ToString();
-            //int cod = int.Parse(dataGridView2.SelectedRows[0].Cells[0].Value.ToString());
+            if (!generatedBoxes) geneerateTextBoxes_Clicked(sender, e); // in case the generate boxes was not clicked to be actevated on child row selection
+            if (string.IsNullOrEmpty(dataGridView2.CurrentRow.Cells[0].Value.ToString())) return;
+            List<string> columns = new List<string>(ConfigurationManager.AppSettings["ChildColumnName"].Split(','));
+            int i = 1;
+            id = int.Parse(dataGridView2.CurrentRow.Cells[0].Value.ToString());
+            Console.WriteLine(columns.ToString());
+            Console.WriteLine("Suntem in grid 2.............");
+            Console.WriteLine(id);
+            foreach (var col in columns)
+            {
+
+                TextBox textBox = (TextBox)box_panel.Controls[col];
+                textBox.Text= dataGridView2.CurrentRow.Cells[col].Value.ToString();
+                Console.WriteLine(textBox.Text);
+                if(i==0)
+                i++;
+            }
+            Console.WriteLine("Iesit din grid 2.............");
 
         }
 
@@ -106,37 +137,80 @@ namespace Dedeman
         {
 
         }
+        public static string GetParameterizedCommandText(SqlCommand command)
+        {
+            string commandText = command.CommandText;
+
+            foreach (SqlParameter parameter in command.Parameters)
+            {
+                // Surround parameter name with single quotes if it's a string type
+                string parameterValue = (parameter.SqlDbType == SqlDbType.NVarChar || parameter.SqlDbType == SqlDbType.VarChar) ?
+                    $"'{parameter.Value.ToString()}'" :
+                    parameter.Value.ToString();
+
+                // Replace parameter placeholder with its value
+                commandText = commandText.Replace(parameter.ParameterName, parameterValue);
+            }
+
+            return commandText;
+        }
 
         private void insert_Click(object sender, EventArgs e)
         {
             try
             {
-                if (!string.IsNullOrEmpty(nume.Text) && !string.IsNullOrEmpty(cantitate.Text) &&
-            !string.IsNullOrEmpty(pret.Text) && !string.IsNullOrEmpty(magazin.Text) && !string.IsNullOrEmpty(descriere.Text))
+                SqlConnection cs = new SqlConnection(ConfigurationManager.ConnectionStrings["cn"].ConnectionString);
+
+                List<string> columns = new List<string>(ConfigurationManager.AppSettings["ChildColumnName"].Split(','));
+                List<string> columnsTypes = new List<string>(ConfigurationManager.AppSettings["ChildParaTypes"].Split(','));
+                foreach (var col in columns)
                 {
-                    da.InsertCommand = new SqlCommand
-                    ("INSERT INTO Produse Values (@nume, @categorie,@pret, @cantitate,@cod_magazin,@descriere);", cs);
-
-                    float pret_nou = (float)Math.Round(float.Parse(pret.Text, CultureInfo.InvariantCulture), 2);
-
-
-                    da.InsertCommand = new SqlCommand("INSERT INTO Produse (nume, categorie, pret, cantitate, cod_magazin, descriere) VALUES (@nume, @categorie, @pret, @cantitate, @cod_magazin, @descriere);", cs);
-                    da.InsertCommand.Parameters.Add("@nume", SqlDbType.NVarChar).Value = nume.Text;
-                    da.InsertCommand.Parameters.Add("@categorie", SqlDbType.VarChar).Value = cat;
-                    da.InsertCommand.Parameters.Add("@pret", SqlDbType.Float).Value = pret_nou;
-                    da.InsertCommand.Parameters.Add("@cantitate", SqlDbType.Int).Value = int.Parse(cantitate.Text);
-                    da.InsertCommand.Parameters.Add("@cod_magazin", SqlDbType.Int).Value = int.Parse(magazin.Text);
-                    da.InsertCommand.Parameters.Add("@descriere", SqlDbType.VarChar).Value = descriere.Text;
-                    cs.Open();
-
-
-                    da.InsertCommand.ExecuteNonQuery();
-                    MessageBox.Show("Insertion complete");
+                    TextBox textBox = (TextBox)box_panel.Controls[col];
+                    if (string.IsNullOrEmpty(textBox.Text))
+                    {
+                        MessageBox.Show("Empty Fields");
+                        return;
+                    }
                 }
-                else
-                    MessageBox.Show("Empty Fields");
-                cs.Close();
+                da.InsertCommand = new SqlCommand(ConfigurationManager.AppSettings["insertQuery"], cs);
+                int i = 0;
+                foreach (var col in columns)
+                {
+                    TextBox textBox = (TextBox)box_panel.Controls[col];
+                    Console.WriteLine("------------");
+                    Console.WriteLine(col);
+                    Console.WriteLine(textBox.Text);
+                    Console.WriteLine(columnsTypes[i]);
+                    Console.WriteLine("--------------");
 
+                    if (String.Compare(columnsTypes[i], "VarChar")==0){
+                        da.InsertCommand.Parameters.Add("@"+col, SqlDbType.VarChar).Value = textBox.Text;
+                    }
+                    else
+                    if (String.Compare(columnsTypes[i], "NVarChar") == 0)
+                    {
+                        da.InsertCommand.Parameters.Add("@" + col, SqlDbType.NVarChar).Value = textBox.Text;
+                    }
+                    else
+                    if (String.Compare(columnsTypes[i], "Int") == 0)
+                    {
+                        da.InsertCommand.Parameters.Add("@" + col, SqlDbType.Int).Value = int.Parse(textBox.Text);
+                    }
+                    else
+                    if (String.Compare(columnsTypes[i], "Float") == 0)
+                    {
+                        float new_textBox = (float)Math.Round(float.Parse(textBox.Text, CultureInfo.InvariantCulture), 2);
+                        da.InsertCommand.Parameters.Add("@" + col, SqlDbType.Float).Value = new_textBox;
+                    }
+                    i++;
+                }
+                cs.Open();
+                Console.WriteLine(GetParameterizedCommandText(da.InsertCommand));
+                da.InsertCommand.ExecuteNonQuery();
+                cs.Close();
+                this.refresh();
+                this.clearTextFields();
+                MessageBox.Show("Insertion complete");
 
             }
             catch (Exception ex)
@@ -148,23 +222,17 @@ namespace Dedeman
             }
         }
 
-        private void refresh_Click(object sender, EventArgs e)
+        private void refresh()
         {
             try
             {
-                dataGridView1.BackgroundColor = SystemColors.ControlDark;
-
-                da.SelectCommand = new SqlCommand(" select cod_prod, nume, pret, cantitate,descriere,cod_magazin from Produse where categorie=@categorie", cs);
-                cat = dataGridView1.SelectedRows[0].Cells[0].Value.ToString();
-                da.SelectCommand.Parameters.Add("@categorie", SqlDbType.VarChar).Value = cat;
+                da.SelectCommand = new SqlCommand(ConfigurationManager.AppSettings["selectChild"], cs);
+                pFkid = dataGridView1.SelectedRows[0].Cells[0].Value.ToString();
+                Console.WriteLine(pFkid);
+                da.SelectCommand.Parameters.Add("@pFkid", SqlDbType.VarChar).Value = pFkid;
                 ds1.Clear();
                 da.Fill(ds1);
-
                 dataGridView2.DataSource = ds1.Tables[0];
-                dataGridView2.Columns["cod_prod"].Visible = false;
-                cs.Close();
-
-
             }
             catch (Exception ex)
             {
@@ -173,39 +241,75 @@ namespace Dedeman
             }
 
         }
+        private void clearTextFields() {
+            List<string> columns = new List<string>(ConfigurationManager.AppSettings["ChildColumnName"].Split(','));
+            foreach (var col in columns)
+            {
+                TextBox textBox = (TextBox)box_panel.Controls[col];
+                textBox.Clear();
+                textBox.Text = col;
+
+            }
+        }
 
         private void update_Click(object sender, EventArgs e)
         {
             try
             {
+                SqlConnection cs = new SqlConnection(ConfigurationManager.ConnectionStrings["cn"].ConnectionString);
 
-                if (!string.IsNullOrEmpty(nume.Text) && !string.IsNullOrEmpty(cantitate.Text) &&
-            !string.IsNullOrEmpty(pret.Text) && !string.IsNullOrEmpty(magazin.Text))
+                List<string> columns = new List<string>(ConfigurationManager.AppSettings["ChildColumnName"].Split(','));
+                List<string> columnsTypes = new List<string>(ConfigurationManager.AppSettings["ChildParaTypes"].Split(','));
+                foreach (var col in columns)
                 {
-                    da.UpdateCommand = new SqlCommand("Update Produse set " +
-                        "nume=@nume, " +
-                        "categorie=@categorie," +
-                        " pret=@pret, " +
-                        "cantitate=@cantitate" +
-                        ",descriere=@descriere," +
-                        "cod_magazin=@cod_magazin where cod_prod=@cod_prod", cs);
-
-                    da.UpdateCommand.Parameters.Add("@nume", SqlDbType.NVarChar).Value = nume.Text;
-                    da.UpdateCommand.Parameters.Add("@categorie", SqlDbType.VarChar).Value = cat;
-                    da.UpdateCommand.Parameters.Add("@pret", SqlDbType.Float).Value = float.Parse(pret.Text);
-
-                    da.UpdateCommand.Parameters.Add("@cantitate", SqlDbType.Int).Value = int.Parse(cantitate.Text);
-                    da.UpdateCommand.Parameters.Add("@descriere", SqlDbType.VarChar).Value = descriere.Text;
-                    da.UpdateCommand.Parameters.Add("@cod_magazin", SqlDbType.Int).Value = int.Parse(magazin.Text);
-
-                    da.UpdateCommand.Parameters.Add("@cod_prod", SqlDbType.Int).Value = int.Parse(dataGridView2.SelectedRows[0].Cells[0].Value.ToString());
-
-
-                    cs.Open();
-                    da.UpdateCommand.ExecuteNonQuery();
-                    MessageBox.Show("Update succesful");
+                    TextBox textBox = (TextBox)box_panel.Controls[col];
+                    if (string.IsNullOrEmpty(textBox.Text))
+                    {
+                        MessageBox.Show("Empty Fields");
+                        return;
+                    }
                 }
-                cs.Close();
+                da.UpdateCommand = new SqlCommand(ConfigurationManager.AppSettings["UpdateQuery"], cs);
+                int i = 0;
+                foreach (var col in columns)
+                {
+                    TextBox textBox = (TextBox)box_panel.Controls[col];
+                    Console.WriteLine("------------");
+                    Console.WriteLine(col);
+                    Console.WriteLine(textBox.Text);
+                    Console.WriteLine(columnsTypes[i]);
+                    Console.WriteLine("--------------");
+
+                    if (String.Compare(columnsTypes[i], "VarChar") == 0)
+                    {
+                        da.UpdateCommand.Parameters.Add("@" + col, SqlDbType.VarChar).Value = textBox.Text;
+                    }
+                    else
+                    if (String.Compare(columnsTypes[i], "NVarChar") == 0)
+                    {
+                        da.UpdateCommand.Parameters.Add("@" + col, SqlDbType.NVarChar).Value = textBox.Text;
+                    }
+                    else
+                    if (String.Compare(columnsTypes[i], "Int") == 0)
+                    {
+                        da.UpdateCommand.Parameters.Add("@" + col, SqlDbType.Int).Value = int.Parse(textBox.Text);
+                    }
+                    else
+                    if (String.Compare(columnsTypes[i], "Float") == 0)
+                    {
+                        float new_textBox = (float)Math.Round(float.Parse(textBox.Text, CultureInfo.InvariantCulture), 2);
+                        da.UpdateCommand.Parameters.Add("@" + col, SqlDbType.Float).Value = new_textBox;
+                    }
+                    i++;
+                }
+                da.UpdateCommand.Parameters.AddWithValue("@childPK", id);
+
+                cs.Open();
+                    da.UpdateCommand.ExecuteNonQuery();
+                    cs.Close();
+                    MessageBox.Show("Update succesful");
+                    this.refresh();
+                this.clearTextFields();                
             }
             catch (Exception ex)
             {
@@ -222,15 +326,19 @@ namespace Dedeman
             {
 
                
-                    da.DeleteCommand = new SqlCommand("Delete from Produse where cod_prod=@cod_prod", cs);
+                    da.DeleteCommand = new SqlCommand(ConfigurationManager.AppSettings["DeleteQuery"], cs);
 
-                    da.DeleteCommand.Parameters.Add("@cod_prod", SqlDbType.Int).Value = int.Parse(dataGridView2.SelectedRows[0].Cells[0].Value.ToString());
+                da.DeleteCommand.Parameters.AddWithValue("@childPK", id);
 
-                    cs.Open();
+
+                cs.Open();
                     da.DeleteCommand.ExecuteNonQuery();
-                    MessageBox.Show("Delete succesful");
-             
                 cs.Close();
+                MessageBox.Show("Delete succesful");
+               this.refresh();
+                this.clearTextFields();
+
+                
             }
             catch (Exception ex)
             {
@@ -241,5 +349,7 @@ namespace Dedeman
             }
 
         }
+
+
     }
 }

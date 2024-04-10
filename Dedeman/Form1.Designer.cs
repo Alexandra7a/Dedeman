@@ -35,16 +35,8 @@
             this.button5 = new System.Windows.Forms.Button();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.dataGridView2 = new System.Windows.Forms.DataGridView();
-            this.nume = new System.Windows.Forms.TextBox();
-            this.magazin = new System.Windows.Forms.TextBox();
-            this.pret = new System.Windows.Forms.TextBox();
-            this.cantitate = new System.Windows.Forms.TextBox();
-            this.descriere = new System.Windows.Forms.TextBox();
-            this.label1 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
-            this.label6 = new System.Windows.Forms.Label();
+            this.button1 = new System.Windows.Forms.Button();
+            this.box_panel = new System.Windows.Forms.Panel();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView2)).BeginInit();
             this.SuspendLayout();
@@ -63,7 +55,7 @@
             // button2
             // 
             this.button2.BackColor = System.Drawing.SystemColors.Info;
-            this.button2.Location = new System.Drawing.Point(517, 448);
+            this.button2.Location = new System.Drawing.Point(697, 407);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(87, 39);
             this.button2.TabIndex = 3;
@@ -74,7 +66,7 @@
             // button3
             // 
             this.button3.BackColor = System.Drawing.SystemColors.Info;
-            this.button3.Location = new System.Drawing.Point(610, 448);
+            this.button3.Location = new System.Drawing.Point(700, 452);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(84, 39);
             this.button3.TabIndex = 4;
@@ -85,7 +77,7 @@
             // button4
             // 
             this.button4.BackColor = System.Drawing.SystemColors.Info;
-            this.button4.Location = new System.Drawing.Point(700, 448);
+            this.button4.Location = new System.Drawing.Point(700, 497);
             this.button4.Name = "button4";
             this.button4.Size = new System.Drawing.Size(84, 39);
             this.button4.TabIndex = 5;
@@ -102,7 +94,6 @@
             this.button5.TabIndex = 6;
             this.button5.Text = "refresh";
             this.button5.UseVisualStyleBackColor = false;
-            this.button5.Click += new System.EventHandler(this.refresh_Click);
             // 
             // dataGridView1
             // 
@@ -130,103 +121,31 @@
             this.dataGridView2.TabIndex = 8;
             this.dataGridView2.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.DataGrid2_CellClick);
             // 
-            // nume
+            // button1
             // 
-            this.nume.Location = new System.Drawing.Point(290, 295);
-            this.nume.Multiline = true;
-            this.nume.Name = "nume";
-            this.nume.Size = new System.Drawing.Size(494, 31);
-            this.nume.TabIndex = 10;
+            this.button1.BackColor = System.Drawing.SystemColors.Info;
+            this.button1.Location = new System.Drawing.Point(50, 497);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(160, 37);
+            this.button1.TabIndex = 22;
+            this.button1.Text = "Generate Text Boxes";
+            this.button1.UseVisualStyleBackColor = false;
+            this.button1.Click += new System.EventHandler(this.geneerateTextBoxes_Clicked);
             // 
-            // magazin
+            // box_panel
             // 
-            this.magazin.Location = new System.Drawing.Point(290, 349);
-            this.magazin.Name = "magazin";
-            this.magazin.Size = new System.Drawing.Size(196, 22);
-            this.magazin.TabIndex = 11;
-            // 
-            // pret
-            // 
-            this.pret.Location = new System.Drawing.Point(575, 349);
-            this.pret.Name = "pret";
-            this.pret.Size = new System.Drawing.Size(127, 22);
-            this.pret.TabIndex = 13;
-            // 
-            // cantitate
-            // 
-            this.cantitate.Location = new System.Drawing.Point(575, 396);
-            this.cantitate.Name = "cantitate";
-            this.cantitate.Size = new System.Drawing.Size(171, 22);
-            this.cantitate.TabIndex = 14;
-            // 
-            // descriere
-            // 
-            this.descriere.Location = new System.Drawing.Point(243, 421);
-            this.descriere.Multiline = true;
-            this.descriere.Name = "descriere";
-            this.descriere.Size = new System.Drawing.Size(265, 99);
-            this.descriere.TabIndex = 15;
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(240, 298);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(44, 16);
-            this.label1.TabIndex = 16;
-            this.label1.Text = "Name";
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(240, 355);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(39, 16);
-            this.label2.TabIndex = 17;
-            this.label2.Text = "Shop";
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(514, 396);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(55, 16);
-            this.label3.TabIndex = 18;
-            this.label3.Text = "Quantity";
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(531, 349);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(38, 16);
-            this.label4.TabIndex = 19;
-            this.label4.Text = "Price";
-            // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(240, 402);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(66, 16);
-            this.label6.TabIndex = 21;
-            this.label6.Text = "Descriere";
+            this.box_panel.Location = new System.Drawing.Point(243, 304);
+            this.box_panel.Name = "box_panel";
+            this.box_panel.Size = new System.Drawing.Size(438, 237);
+            this.box_panel.TabIndex = 23;
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(816, 553);
-            this.Controls.Add(this.label6);
-            this.Controls.Add(this.label4);
-            this.Controls.Add(this.label3);
-            this.Controls.Add(this.label2);
-            this.Controls.Add(this.label1);
-            this.Controls.Add(this.descriere);
-            this.Controls.Add(this.cantitate);
-            this.Controls.Add(this.pret);
-            this.Controls.Add(this.magazin);
-            this.Controls.Add(this.nume);
+            this.ClientSize = new System.Drawing.Size(847, 708);
+            this.Controls.Add(this.box_panel);
+            this.Controls.Add(this.button1);
             this.Controls.Add(this.dataGridView2);
             this.Controls.Add(this.dataGridView1);
             this.Controls.Add(this.button5);
@@ -240,7 +159,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView2)).EndInit();
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
@@ -253,16 +171,8 @@
         private System.Windows.Forms.Button button5;
         private System.Windows.Forms.DataGridView dataGridView1;
         private System.Windows.Forms.DataGridView dataGridView2;
-        private System.Windows.Forms.TextBox nume;
-        private System.Windows.Forms.TextBox magazin;
-        private System.Windows.Forms.TextBox pret;
-        private System.Windows.Forms.TextBox cantitate;
-        private System.Windows.Forms.TextBox descriere;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Panel box_panel;
     }
 }
 
