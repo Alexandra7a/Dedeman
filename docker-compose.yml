@@ -1,0 +1,7 @@
+services:
+  app:
+    build: .
+    labels:
+    - com.yourdomain.project.id=688b2b1e4a4d4ebff4e1de97
+    ports:
+    - '80'
